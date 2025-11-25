@@ -1,7 +1,7 @@
 import numpy as np
 from ...hardware.ScreenshotMaster import ScreenshotMaster
-
-print(np.__version__)
+# pymodaq_plugins_rigi/src/pymodaq_plugins_rigi/hardware/ScreenshotMaster.py
+# print(np.__version__)
 
 from pymodaq_utils.utils import ThreadCommand
 from pymodaq_data.data import DataToExport
@@ -78,7 +78,8 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
 
         intensity_list = []
         for i in range(N):
-            gray, intensity = self.controller.start_a_grab_snap()
+            gray, intensity, text = self.controller.start_a_grab_snap()
+            print(text)
             intensity_list.append(intensity)
 
         data_to_export = []

@@ -8,14 +8,16 @@ Created on Mon Jul 28 2025
 import numpy as np
 import cv2
 import pyautogui
-
+import pytesseract
 
 class ScreenshotMaster:
 
     ############## My methods
 
-    def __init__(self, region=(50, 55, 1260, 960)) -> None:
+    # def __init__(self, region=(50, 55, 1260, 960)) -> None:
+    def __init__(self, region=(330, 90, 20, 20)) -> None:
         # Define region: (left, top, width, height)
+        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
         self.region = region
 
 
@@ -34,6 +36,9 @@ class ScreenshotMaster:
         middle_pixel = gray[int(gray.shape[0]/2)][int(gray.shape[1]/2)]
         intensity = np.sum(gray) / pxls
 
-        return gray, intensity
+        text = pytesseract.image_to_string(screenshot,lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')
+        text = int(text)
+
+        return gray, intensity, text
 
 
