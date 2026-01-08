@@ -10,6 +10,8 @@ from pymodaq_gui.parameter import Parameter
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
 
+import keyboard
+import pyautogui
 
 class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
     params = comon_parameters+[
@@ -22,6 +24,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
              {'title':'X End', 'name':'x_end', 'type':'int', 'value':1260, 'default':1260 },
              {'title':'Y End', 'name':'y_end', 'type':'int', 'value':960, 'default':960},
              ]},
+        {'title':'Define Region TEST', 'name':'define', 'type':'bool_push', 'value':False, 'default':False},
         {'title':'Integrate over N', 'name':'integrate', 'type':'led_push', 'value':False, 'default':False},
         {'title':'N', 'name':'integrate_n', 'type':'int', 'value':100, 'default':100},
         ]
@@ -45,6 +48,19 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
                 self.settings.child('region', 'y_start').value(), 
                 self.settings.child('region', 'x_end').value(), 
                 self.settings.child('region', 'y_end').value())
+            self.controller.set_region(region)
+
+        
+        if param.name() == "define":
+            print("Defining Region")
+            points = {}
+
+            while len(points)!=2:
+                if keyboard.is_pressed('ctrl'):
+                    points[ pyautogui.position() ] = ""
+
+            points = [key for key in points.keys() ]
+            region = (points[0][0], points[0][1], points[1][0], points[1][1])
             self.controller.set_region(region)
 
 
@@ -78,8 +94,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
 
         intensity_list = []
         for i in range(N):
-            gray, intensity, text = self.controller.start_a_grab_snap()
-            print(text)
+            gray, intensity = self.controller.start_a_grab_snap()
             intensity_list.append(intensity)
 
         data_to_export = []

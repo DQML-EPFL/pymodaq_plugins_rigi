@@ -36,9 +36,9 @@ class ScreenshotMaster:
         middle_pixel = gray[int(gray.shape[0]/2)][int(gray.shape[1]/2)]
         intensity = np.sum(gray) / pxls
 
-        text = pytesseract.image_to_string(screenshot,lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')
-        text = int(text)
+        # text = pytesseract.image_to_string(screenshot,lang='eng', config='--psm 10 --oem 3 -c tessedit_char_whitelist=0123456789')
+        # text = int(text)
 
-        return gray, intensity, text
+        return gray, intensity
 
 
