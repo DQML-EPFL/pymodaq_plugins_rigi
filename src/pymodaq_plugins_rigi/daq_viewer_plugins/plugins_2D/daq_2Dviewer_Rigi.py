@@ -24,7 +24,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
              {'title':'X End', 'name':'x_end', 'type':'int', 'value':1260, 'default':1260 },
              {'title':'Y End', 'name':'y_end', 'type':'int', 'value':960, 'default':960},
              ]},
-        {'title':'Define Region TEST', 'name':'define', 'type':'bool_push', 'value':False, 'default':False},
+        {'title':'Define Region', 'name':'define', 'type':'bool_push', 'value':False, 'default':False},
         {'title':'Integrate over N', 'name':'integrate', 'type':'led_push', 'value':False, 'default':False},
         {'title':'N', 'name':'integrate_n', 'type':'int', 'value':100, 'default':100},
         ]
@@ -60,7 +60,8 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
                     points[ pyautogui.position() ] = ""
 
             points = [key for key in points.keys() ]
-            region = (points[0][0], points[0][1], points[1][0], points[1][1])
+
+            region = (points[0][0], points[0][1] , (points[1][0]-points[0][0]),  (points[1][1] - points[0][1]) )
             self.controller.set_region(region)
 
 
