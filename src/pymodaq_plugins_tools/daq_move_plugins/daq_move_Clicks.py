@@ -27,8 +27,7 @@ class DAQ_Move_Clicks(DAQ_Move_base):
 
     """
     is_multiaxes = False
-    _axis_names: Union[List[str], Dict[str, int]] = ['Wavelength']
-    _controller_units: Union[str, List[str]] = 'nm'
+    _axis_names = ['Iteration']
     _epsilon: Union[float, List[float]] = 0.01
     data_actuator_type = DataActuatorType.DataActuator
 
@@ -55,7 +54,10 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         -------
         float: The position obtained after scaling conversion.
         """
-        pos = DataActuator(data=self.controller.get_current_value(), units=self.axis_unit)
+        pos = DataActuator(data=self.controller.get_current_value(), units='')
+        # pos = DataActuator(data=self.controller.get_current_value(), units='')
+        # pos = float(self.controller.get_current_value())
+        # print(self.controller.get_current_value())
         return pos
 
 
@@ -106,22 +108,22 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         ----------
         value: (float) value of the absolute target positioning
         """
-        self.controller.execute()
+        self.controller.execute(value[0][0])
 
 
     def move_rel(self, value: DataActuator):
         """ Move the actuator to the relative target actuator value defined by value
-
+        
         Parameters
         ----------
         value: (float) value of the relative target positioning
         """
-        self.controller.execute()
+        self.controller.execute(value[0][0])
 
 
     def move_home(self):
         """Call the reference method of the controller"""
-        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+        self.controller.execute(0)
 
 
     def stop_motion(self):
@@ -147,4 +149,3 @@ class DAQ_Move_Clicks(DAQ_Move_base):
 
 if __name__ == '__main__':
     main(__file__)
-

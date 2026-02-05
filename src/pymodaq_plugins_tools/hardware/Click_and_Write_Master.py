@@ -2,7 +2,7 @@ import pyautogui
 from pyautogui import Point
 import time
 import keyboard
-
+import numpy as np
 
 class Click_and_Write_Master:
 
@@ -13,8 +13,10 @@ class Click_and_Write_Master:
         self.click_precision = 3
         self.wait_time = wait_time
 
+        self.value = 0
+
     def get_current_value(self):
-        return -1
+        return self.value
     
     def open_communication(self):
         return True
@@ -25,10 +27,12 @@ class Click_and_Write_Master:
 
     # ------ Moving and defining ------
 
-    def execute(self):
+    def execute(self, value=0):
         for action in self.sequence:
             action.action()
             time.sleep(self.wait_time)
+        
+        self.value= value
 
     def define_sequence(self):
         print(" ---------------- Define Sequence ----------------")
@@ -60,7 +64,7 @@ class Click_and_Write_Master:
 
             if action: self.sequence.append(action)
         
-        
+
         print(" -------------------------------------------------")
         return self.sequence
 

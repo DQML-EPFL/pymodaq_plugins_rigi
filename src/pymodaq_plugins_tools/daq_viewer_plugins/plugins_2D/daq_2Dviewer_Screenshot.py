@@ -29,7 +29,7 @@ class DAQ_2DViewer_Screenshot(DAQ_Viewer_base):
              ]},
         {'title':'Define Region', 'name':'define', 'type':'bool_push', 'value':False, 'default':False},
         {'title':'Integrate over N', 'name':'integrate', 'type':'led_push', 'value':False, 'default':False},
-        {'title':'N', 'name':'integrate_n', 'type':'int', 'value':100, 'default':100},
+        {'title':'N', 'name':'integrate_n', 'type':'int', 'value':1, 'default':1},
         ]
 
     grab_done_signal = Signal()
@@ -104,7 +104,7 @@ class DAQ_2DViewer_Screenshot(DAQ_Viewer_base):
             intensity_list.append(intensity)
 
         data_to_export = []
-        data_to_export.append(DataFromPlugins(name='Region', data=np.flip(gray[::2, ::2], axis=0), dim='Data2D', labels=['Region Observed'], do_plot=True, do_save=False))
+        data_to_export.append(DataFromPlugins(name='Region', data=np.flip(gray[::2, ::2], axis=0), dim='Data2D', labels=['Region Observed'], do_plot=True, do_save=True))
         data_to_export.append(DataFromPlugins(name='Intensity', data=np.mean(intensity_list), dim='Data0D', labels=["Integrated Intensity"], do_plot=True, do_save=True))
 
         data = DataToExport('Picoscope', data=data_to_export)
@@ -128,7 +128,6 @@ class DAQ_2DViewer_Screenshot(DAQ_Viewer_base):
     def stop(self):
         """Stop the current grab hardware wise if necessary"""
         self.emit_status(ThreadCommand('Update_Status', ['Stop']))
-        # ##############################
         return ''
 
 
