@@ -11,6 +11,7 @@ from pymodaq_plugins_tools.hardware.Click_and_Write_Master import Click_and_Writ
 from pyqtgraph.parametertree.parameterTypes import *
 import copy
 
+import PyQt5.QtWidgets as QtWidgets
 
 class DAQ_Move_Clicks(DAQ_Move_base):
     """ Instrument plugin class for an actuator.
@@ -32,6 +33,7 @@ class DAQ_Move_Clicks(DAQ_Move_base):
     data_actuator_type = DataActuatorType.DataActuator
 
     params = [
+             {'title':'Wait Time', 'name':'wait', 'type':'int', 'suffix':'ms', 'value':0.1, 'default':0.1},
              {'title':'Define Sequence', 'name':'define', 'type':'bool_push', 'value':False, 'default':False, 'children':[
                  {'title':'Sample', 'name':'sample', 'type':'str', 'value':"This is a Test", 'readonly':True}
              ]},
@@ -44,8 +46,6 @@ class DAQ_Move_Clicks(DAQ_Move_base):
 
         self.sample_opts = self.settings.child("define", "sample").opts
         self.settings.child("define", "sample").hide()
-
-
 
 
     def get_actuator_value(self):
@@ -69,6 +69,7 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         if param.name() == 'define':
             sequence = self.controller.define_sequence()
             self.update_sequence(sequence)
+            self.settings.child("define").setValue( False ) 
         else: pass
 
 
@@ -105,9 +106,7 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         ----------
         value: (float) value of the absolute target positioning
         """
-
-        self.controller.move(value)
-        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+        self.controller.execute()
 
 
     def move_rel(self, value: DataActuator):
@@ -117,26 +116,21 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         ----------
         value: (float) value of the relative target positioning
         """
-        raise NotImplementedError
+        self.controller.execute()
 
 
     def move_home(self):
         """Call the reference method of the controller"""
-
-        self.controller.move(0)
         self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
 
 
     def stop_motion(self):
         """Stop the actuator and emits move_done signal"""
-
-        ## TODO for your custom plugin
-        self.controller.move( self.controller.get_current_value() )  # when writing your own plugin replace this line
-        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
-
+        pass
 
     def update_sequence(self, sequence):
-
+        
+        self.settings.child("define").clearChildren()   # TODO: Not working
         for i, action in enumerate(sequence):
             opts = self.sample_opts.copy()
             opts["name"] = f"step{i}"

@@ -14,7 +14,7 @@ class Click_and_Write_Master:
         self.wait_time = wait_time
 
     def get_current_value(self):
-        return 0
+        return -1
     
     def open_communication(self):
         return True
@@ -60,6 +60,8 @@ class Click_and_Write_Master:
 
             if action: self.sequence.append(action)
         
+        
+        print(" -------------------------------------------------")
         return self.sequence
 
     def check_position(self, pos):
