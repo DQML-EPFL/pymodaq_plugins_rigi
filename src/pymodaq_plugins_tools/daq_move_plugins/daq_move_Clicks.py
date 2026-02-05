@@ -1,0 +1,133 @@
+
+from typing import Union, List, Dict
+from pymodaq.control_modules.move_utility_classes import (DAQ_Move_base, comon_parameters_fun,
+                                                          main, DataActuatorType, DataActuator)
+
+from pymodaq_utils.utils import ThreadCommand  # object used to send info back to the main thread
+from pymodaq_gui.parameter import Parameter
+
+from pymodaq_plugins_tools.hardware.Click_and_Write_Master import Click_and_Write_Master
+
+class DAQ_Move_Clicks(DAQ_Move_base):
+    """ Instrument plugin class for an actuator.
+    
+    This object inherits all functionalities to communicate with PyMoDAQ’s DAQ_Move module through inheritance via
+    DAQ_Move_base. It makes a bridge between the DAQ_Move module and the Python wrapper of a particular instrument.
+
+    Attributes:
+    -----------
+    controller: object
+        The particular object that allow the communication with the hardware, in general a python wrapper around the
+         hardware library.
+
+    """
+    is_multiaxes = False
+    _axis_names: Union[List[str], Dict[str, int]] = ['Wavelength']
+    _controller_units: Union[str, List[str]] = 'nm'
+    _epsilon: Union[float, List[float]] = 0.01
+    data_actuator_type = DataActuatorType.DataActuator
+
+    params = [
+             {'title':'Define Sequence', 'name':'define', 'type':'bool_push', 'value':False, 'default':False, 'children':[]},
+             
+             ] + comon_parameters_fun(is_multiaxes, axis_names=_axis_names, epsilon=_epsilon)
+
+
+    def ini_attributes(self):
+        self.controller : Click_and_Write_Master = None
+
+
+    def get_actuator_value(self):
+        """Get the current value from the hardware with scaling conversion.
+
+        Returns
+        -------
+        float: The position obtained after scaling conversion.
+        """
+        pos = DataActuator(data=self.controller.get_current_value(), units=self.axis_unit)
+        return pos
+
+
+    def close(self):
+        """Terminate the communication protocol"""
+        if self.is_master:
+             self.controller.close_communication()
+
+
+    def commit_settings(self, param: Parameter):
+        if param.name() == 'define':
+            sequence = self.controller.define_sequence()
+            # self.update_sequence()
+        else: pass
+
+
+    def ini_stage(self, controller=None):
+        """Actuator communication initialization
+
+        Parameters
+        ----------
+        controller: (object)
+            custom object of a PyMoDAQ plugin (Slave case). None if only one actuator by controller (Master case)
+
+        Returns
+        -------
+        info: str
+        initialized: bool
+            False if initialization failed otherwise True
+        """
+        if self.is_master:
+            self.controller = Click_and_Write_Master() 
+            initialized = self.controller.open_communication()
+
+        else:
+            self.controller = controller
+            initialized = True
+
+        info = "Whatever info you want to log"
+        return info, initialized
+
+
+    def move_abs(self, value: DataActuator):
+        """ Move the actuator to the absolute target defined by value
+
+        Parameters
+        ----------
+        value: (float) value of the absolute target positioning
+        """
+
+        self.controller.move(value)
+        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+
+
+    def move_rel(self, value: DataActuator):
+        """ Move the actuator to the relative target actuator value defined by value
+
+        Parameters
+        ----------
+        value: (float) value of the relative target positioning
+        """
+        raise NotImplementedError
+
+
+    def move_home(self):
+        """Call the reference method of the controller"""
+
+        self.controller.move(0)
+        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+
+
+    def stop_motion(self):
+        """Stop the actuator and emits move_done signal"""
+
+        ## TODO for your custom plugin
+        self.controller.move( self.controller.get_current_value() )  # when writing your own plugin replace this line
+        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
+
+
+    # def update_sequence(self):
+
+
+
+
+if __name__ == '__main__':
+    main(__file__)

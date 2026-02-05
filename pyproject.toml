@@ -9,13 +9,12 @@ scanners = false
 package-url = 'https://github.com/Maloherve/pymodaq_plugins_rigi'
 
 [project]
-name = "pymodaq_plugins_rigi"
+name = "pymodaq_plugins_tools"
 description = 'Not being able to get the data from the THz Rigi Camera, this plugin screenshots the current screen to extract the data from the Labview display'
 dependencies = [
     "pymodaq>=5.0.0",
     "opencv-python>=4.12.0",
     "pyautogui>=0.9.54",
-    #todo: list here all dependencies your package may have
 ]
 
 authors = [

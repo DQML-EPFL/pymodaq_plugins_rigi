@@ -1,5 +1,5 @@
-pymodaq_plugins_rigi
-########################
+pymodaq_plugins_tools
+#####################
 
 .. the following must be adapted to your developed package, links to pypi, github  description...
 

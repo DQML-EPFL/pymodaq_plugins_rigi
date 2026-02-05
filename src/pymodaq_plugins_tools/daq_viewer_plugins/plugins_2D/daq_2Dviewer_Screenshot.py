@@ -16,7 +16,7 @@ from qtpy.QtCore import QObject, Signal, Slot, QThread
 import keyboard
 import pyautogui
 
-class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
+class DAQ_2DViewer_Screenshot(DAQ_Viewer_base):
     params = comon_parameters+[
         {'title':'Region Parameters',
          'name':'region',
