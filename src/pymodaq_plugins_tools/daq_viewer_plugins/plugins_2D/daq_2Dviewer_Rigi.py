@@ -9,6 +9,9 @@ from pymodaq_gui.parameter import Parameter
 
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.data import DataFromPlugins
+from qtpy.QtCore import QObject, Signal, Slot, QThread
+
+
 
 import keyboard
 import pyautogui
@@ -29,6 +32,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
         {'title':'N', 'name':'integrate_n', 'type':'int', 'value':100, 'default':100},
         ]
 
+    grab_done_signal = Signal()
 
     def ini_attributes(self):
         region = (self.settings.child('region', 'x_start').value(), 
@@ -52,7 +56,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
 
         
         if param.name() == "define":
-            print("Defining Region")
+            print("Defining Region - Press Control on the TOP LEFT point then on BOTTOM RIGHT point")
             points = {}
 
             while len(points)!=2:
@@ -93,6 +97,7 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
         if self.settings.child('integrate').value():
             N = self.settings.child('integrate_n').value()
 
+
         intensity_list = []
         for i in range(N):
             gray, intensity = self.controller.start_a_grab_snap()
@@ -105,6 +110,8 @@ class DAQ_2DViewer_Rigi(DAQ_Viewer_base):
         data = DataToExport('Picoscope', data=data_to_export)
 
         self.dte_signal.emit(data)
+        self.grab_done_signal.emit()
+
 
         #########################################################
 
