@@ -8,6 +8,10 @@ from pymodaq_gui.parameter import Parameter
 
 from pymodaq_plugins_tools.hardware.Click_and_Write_Master import Click_and_Write_Master
 
+from pyqtgraph.parametertree.parameterTypes import *
+import copy
+
+
 class DAQ_Move_Clicks(DAQ_Move_base):
     """ Instrument plugin class for an actuator.
     
@@ -28,13 +32,20 @@ class DAQ_Move_Clicks(DAQ_Move_base):
     data_actuator_type = DataActuatorType.DataActuator
 
     params = [
-             {'title':'Define Sequence', 'name':'define', 'type':'bool_push', 'value':False, 'default':False, 'children':[]},
+             {'title':'Define Sequence', 'name':'define', 'type':'bool_push', 'value':False, 'default':False, 'children':[
+                 {'title':'Sample', 'name':'sample', 'type':'str', 'value':"This is a Test", 'readonly':True}
+             ]},
              
              ] + comon_parameters_fun(is_multiaxes, axis_names=_axis_names, epsilon=_epsilon)
 
 
     def ini_attributes(self):
         self.controller : Click_and_Write_Master = None
+
+        self.sample_opts = self.settings.child("define", "sample").opts
+        self.settings.child("define", "sample").hide()
+
+
 
 
     def get_actuator_value(self):
@@ -57,7 +68,7 @@ class DAQ_Move_Clicks(DAQ_Move_base):
     def commit_settings(self, param: Parameter):
         if param.name() == 'define':
             sequence = self.controller.define_sequence()
-            # self.update_sequence()
+            self.update_sequence(sequence)
         else: pass
 
 
@@ -124,10 +135,22 @@ class DAQ_Move_Clicks(DAQ_Move_base):
         self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
 
 
-    # def update_sequence(self):
+    def update_sequence(self, sequence):
+
+        for i, action in enumerate(sequence):
+            opts = self.sample_opts.copy()
+            opts["name"] = f"step{i}"
+            opts["title"] = f"Step {i}"
+            opts["value"] = f"{action}"
+            opts["visible"] = True
+            param = TextParameter(**opts)
+            self.settings.child("define").addChild(param)
+
+
 
 
 
 
 if __name__ == '__main__':
     main(__file__)
+

@@ -37,6 +37,7 @@ class Click_and_Write_Master:
         print(" - Press 'Esc' to stop the sequence.")
         print(" -------------------------------------------------")
 
+        self.sequence = []
         record = True
         while record:
             action = None
